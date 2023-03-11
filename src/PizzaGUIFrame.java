@@ -67,12 +67,12 @@ public class PizzaGUIFrame extends JFrame {
 
         //Creates the size choice panel, then sets its location and size
         pizzaSize();
-        size.setBounds(((frame.getWidth() - 500) / 2) + 360, 10, 150, 60);
+        size.setBounds(((frame.getWidth() - 500) / 2) + 360, 10, 162, 60);
         main.add(size);
 
         //Creates the topping choice panel, then sets its location and size
         toppingChoice();
-        toppings.setBounds((frame.getWidth() - 500)/ 2, 80, 510, 60);
+        toppings.setBounds((frame.getWidth() - 500)/ 2, 80, 522, 60);
         main.add(toppings);
 
         //Creates the receipt panel, then sets its location and size
@@ -134,6 +134,7 @@ public class PizzaGUIFrame extends JFrame {
         sizes.addItem("Medium: $12.00");
         sizes.addItem("Large: $16.00");
         sizes.addItem("Super: $20.00");
+        sizes.setSelectedIndex(-1);
         size.add(sizes);
     }
 
@@ -223,7 +224,7 @@ public class PizzaGUIFrame extends JFrame {
         group.clearSelection();
 
         //Sets the combo box to its original value
-        comboBox.setSelectedIndex(0);
+        comboBox.setSelectedIndex(-1);
 
         //For every checkbox button, it unselects it
         for (JCheckBox check : checkBoxes) {
@@ -236,7 +237,7 @@ public class PizzaGUIFrame extends JFrame {
         DecimalFormat round = new DecimalFormat("0.00");
 
         //Variable declaration
-        double sizeChoice, sizePrice, crustPrice = 0, typePrice, itr = 0, toppingPrice = 0, subTotal, tax = 0.07, taxPrice, total;
+        double sizeChoice, sizePrice = 0, crustPrice = 0, typePrice, itr = 0, toppingPrice = 0, subTotal, tax = 0.07, taxPrice, total;
         String ingredients = "\t";
 
         //Makes the receipt look better
@@ -253,9 +254,13 @@ public class PizzaGUIFrame extends JFrame {
         } else if (sizeChoice == 2) {
             text.append("\tLarge ");
             sizePrice = 16;
-        } else {
+        } else if (sizeChoice == 3){
             text.append("\tSuper ");
             sizePrice = 20;
+        } else {
+            JOptionPane.showMessageDialog(frame, "You have not selected a size!");
+            text.setText(null);
+            return;
         }
 
         //Adds to the receipt what crust you got an adds if there is an additional cost
@@ -263,13 +268,23 @@ public class PizzaGUIFrame extends JFrame {
             if (button.isSelected()) {
                 if (itr == 0) {
                     text.append("thin crust");
+                    break;
                 } else if (itr == 1) {
                     text.append("regular crust");
+                    break;
                 } else {
                     text.append("deep-dish");
                     crustPrice = 1;
+                    break;
                 }
             }
+
+            if (itr == 2) {
+                JOptionPane.showMessageDialog(frame, "You have not selected a crust type!");
+                text.setText(null);
+                return;
+            }
+
             itr++;
         }
 
@@ -286,7 +301,11 @@ public class PizzaGUIFrame extends JFrame {
         }
 
         //Removes the final comma because there is no ingredient after the last
-        ingredients = ingredients.substring(0, ingredients.length() - 2);
+        if (ingredients.equals("\t")) {
+            ingredients = "";
+        } else {
+            ingredients = ingredients.substring(0, ingredients.length() - 2);
+        }
 
         //Adds the price to the receipt and all the ingredients
         text.append("\tIngredients:\t\t\t$" + round.format(toppingPrice) + "\n");
